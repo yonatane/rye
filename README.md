@@ -2,8 +2,8 @@
 
 Clojure error handling
 
-Currently only implements `try-let` which keeps the bindings even in the `catch` and finally `clauses`<sup>&ast;</sup>.
-<sup>&ast; Not necessarily a good idea</sup>
+Currently only implements `try-let` which keeps the bindings even in the `catch` and `finally` clauses<sup>&ast;</sup>.<br>
+<sub>&ast; Not necessarily a good idea</sub>
 
 ## Usage
 
