@@ -123,7 +123,8 @@
                      (/ a b)
                      (finally
                        (is (= 1 (+ a b)) "Bindings are available in finally")
-                       (reset! finally-executed true)))))))
+                       (reset! finally-executed true)))))
+      (is @finally-executed)))
   (testing "catch and finally"
     (let [finally-executed (atom false)]
       (is (= :caught
