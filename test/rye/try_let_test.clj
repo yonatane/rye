@@ -164,5 +164,40 @@
                (finally
                  (is (and (= 1 a) (nil? b)) "Only successful bindings are available in finally")
                  (reset! finally-executed true)))))
+      (is @finally-executed))))
+
+(deftest throw-while-handling
+  (testing "throw in catch"
+    (let [finally-executed (atom false)]
+      (is (thrown-with-msg? Exception #"catch"
+                            (try-let [a 1
+                                      b 0]
+                              (/ a b)
+                              (catch ArithmeticException e
+                                (throw (Exception. "catch" e)))
+                              (finally
+                                (is (and (= 1 a) (= 0 b)) "Bindings are available in finally")
+                                (reset! finally-executed true)))))
       (is @finally-executed)))
-  )
+  (testing "throw in finally"
+    (let [catch-executed (atom false)]
+      (is (thrown-with-msg? Exception #"finally"
+                            (try-let [a 1
+                                      b 0]
+                              (/ a b)
+                              (catch ArithmeticException _
+                                (reset! catch-executed true))
+                              (finally
+                                (throw (Exception. "finally"))))))
+      (is @catch-executed)))
+  (testing "throw in catch and finally"
+    (let [catch-executed (atom false)]
+      (is (thrown-with-msg? Exception #"finally"
+                            (try-let [a 1
+                                      b 0]
+                              (/ a b)
+                              (catch ArithmeticException e
+                                (reset! catch-executed true))
+                              (finally
+                                (throw (Exception. "finally"))))))
+      (is @catch-executed))))
