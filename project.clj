@@ -3,6 +3,5 @@
   :url "https://github.com/yonatane/rye"
   :license {:name "MIT License"}
   :dependencies [[org.clojure/clojure "1.10.1"]]
-  :repl-options {:init-ns rye.core}
   :global-vars {*warn-on-reflection* true}
   :pedantic? :abort)
