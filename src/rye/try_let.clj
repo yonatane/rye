@@ -1,5 +1,6 @@
 (ns rye.try-let
-  (:require [rye.parse-try-body :refer [parse-try-body]]))
+  (:require [rye.parse-try-body :refer [parse-try-body]])
+  (:import (rye.jump Jump)))
 
 (defmacro try-let
   [bindings* & body]
@@ -11,7 +12,7 @@
                     `(try
                        ~@exprs
                        (catch Exception e#
-                         (throw (ex-info "wrapper" {::binding-vals ~(vec binding-forms)} e#)))))
+                         (throw (Jump. {::binding-vals ~(vec binding-forms)} e#)))))
         try-inits (map (comp try-exprs list second) bindings)
         try-bindings (interleave binding-forms try-inits)]
     `(try
@@ -21,12 +22,10 @@
            ~@expressions
            ~@catches
            ~@(when finally (list finally))))
-       (catch clojure.lang.ExceptionInfo e#
-         (when-not (::binding-vals (ex-data e#))
-           (throw e#))
-         (let [e-data# (ex-data e#)
-               [~@binding-forms] (::binding-vals e-data#)]
+       (catch Jump jump#
+         (let [jump-data# (ex-data jump#)
+               [~@binding-forms] (::binding-vals jump-data#)]
            (try
-             (some-> (ex-cause e#) (throw))
+             (throw (ex-cause jump#))
              ~@catches
              ~@(when finally (list finally))))))))

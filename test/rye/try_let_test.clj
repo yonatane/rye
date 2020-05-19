@@ -1,7 +1,7 @@
 (ns rye.try-let-test
   (:require [clojure.test :refer [deftest testing is]]
             [rye.try-let :refer [try-let]])
-  (:import (clojure.lang ExceptionInfo)))
+  (:import (rye.jump Jump)))
 
 (deftest success
   (testing "nothing"
@@ -26,7 +26,7 @@
     (is (= 3 (try-let [a 1
                        b 2]
                (+ a b)
-               (catch ExceptionInfo _
+               (catch Jump _
                  (is false "Should not catch anything"))
                (catch Exception _
                  (is false "Should not catch anything"))))))
@@ -56,7 +56,7 @@
       (is (= 3 (try-let [a 1
                          b 2]
                  (+ a b)
-                 (catch ExceptionInfo _
+                 (catch Jump _
                    (is false "Should not catch anything"))
                  (catch Exception _
                    (is false "Should not catch anything"))
@@ -68,7 +68,7 @@
     (let [finally-executed (atom false)]
       (is (nil? (try-let [a 1
                           b 2]
-                  (catch ExceptionInfo _
+                  (catch Jump _
                     (is false "Should not catch anything"))
                   (catch Exception _
                     (is false "Should not catch anything"))
@@ -143,7 +143,7 @@
              (try-let [a 1
                        b 0]
                (/ a b)
-               (catch ExceptionInfo _
+               (catch Jump _
                  (is false "Should not catch this"))
                (catch ArithmeticException _
                  :caught)
@@ -158,7 +158,7 @@
       (is (= :caught
              (try-let [a 1
                        b (throw (Exception.))]
-               (catch ExceptionInfo _
+               (catch Jump _
                  (is false "Should not catch this"))
                (catch Exception _
                  :caught)
